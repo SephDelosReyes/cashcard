@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.3.10-SNAPSHOT'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.openapi.generator' version '6.6.0'
 }
 
 group = 'example'
@@ -27,6 +28,7 @@ dependencies {
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
 }
 
 tasks.named('test') {
@@ -46,3 +48,18 @@ test {
 		showStandardStreams = true
 	}
 }
+
+openApiGenerate {
+	generatorName.set("spring")
+	inputSpec.set("$rootDir/src/main/java/example/cashcard/petstore/petstore.yml")
+	outputDir.set("$layout.buildDirectory/generated") //buildDir deprecation things
+	apiPackage.set("org.openapi.example.api")
+	invokerPackage.set("org.openapi.example.invoker")
+	modelPackage.set("org.openapi.example.model")
+	configOptions.set([
+			dateLibrary: "java8"
+	])
+}
+
+compileJava.dependsOn tasks.named("openApiGenerate")
+
